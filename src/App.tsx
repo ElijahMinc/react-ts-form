@@ -56,14 +56,14 @@ const App: React.FC = () => {
     </EuiButton>
   );
 
-  const [data, setData] = React.useState<object[]>([]);
+  // const [data, setData] = React.useState<object[]>([]);
 
 
-  React.useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/todos')
-      .then(response => response.json())
-      .then(json => setData(json))
-  }, [])
+  // React.useEffect(() => {
+  //   fetch('https://jsonplaceholder.typicode.com/todos')
+  //     .then(response => response.json())
+  //     .then(json => setData(json))
+  // }, [])
 
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>({
     mode: 'onBlur',
