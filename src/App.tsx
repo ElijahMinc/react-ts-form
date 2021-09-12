@@ -44,26 +44,13 @@ const schema = yup.object().shape({
 });
 
 const App: React.FC = () => {
-  const [showErrors, setShowErrors] = React.useState<boolean>(true);
+  // const [showErrors, setShowErrors] = React.useState<boolean>(true);
 
-  const onButtonClick = () => {
-    setShowErrors(!showErrors);
-  };
+  // const onButtonClick = () => {
+  //   setShowErrors(!showErrors);
+  // };
 
-  const button = (
-    <EuiButton fill color="danger" onClick={onButtonClick}>
-      Toggle errors
-    </EuiButton>
-  );
-
-  // const [data, setData] = React.useState<object[]>([]);
-
-
-  // React.useEffect(() => {
-  //   fetch('https://jsonplaceholder.typicode.com/todos')
-  //     .then(response => response.json())
-  //     .then(json => setData(json))
-  // }, [])
+  const error: string[] = ["Please, set your first Name", "Please, set your last Name"]
 
   const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>({
     mode: 'onBlur',
@@ -71,8 +58,10 @@ const App: React.FC = () => {
   });
 
 
-
-  const onSubmit: SubmitHandler<IFormInput> = data => console.log(data)
+  const onSubmit: SubmitHandler<IFormInput> = data => {
+    console.log(data)
+    
+  }
   return (
     <>
       <Header
@@ -95,15 +84,29 @@ const App: React.FC = () => {
         title="Elijah Minc"
       />
       <div className="container">
-        <EuiForm isInvalid={!!errors?.firstName && !!errors?.secondName} component='form' onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-          <EuiFormRow isInvalid={!!errors?.firstName} label="Set your First Name" helpText={errors?.firstName?.message} fullWidth>
+        <EuiForm
+          isInvalid={!!errors?.firstName && !!errors?.secondName}
+          component='form'
+          onSubmit={handleSubmit(onSubmit)}
+          style={{ width: '100%' }}
+          error={error}
+        >
+          <EuiFormRow
+            isInvalid={!!errors?.firstName}
+            label="Set your First Name"
+            helpText={errors?.firstName?.message}
+            fullWidth>
             <Input
               placeholder="Your first Name"
               {...register('firstName', { required: true })}
               isInvalid={!!errors?.firstName}
             />
           </EuiFormRow>
-          <EuiFormRow isInvalid={!!errors?.secondName} label="Set your Second Name" helpText={errors?.secondName?.message} fullWidth>
+          <EuiFormRow
+            isInvalid={!!errors?.secondName}
+            label="Set your Second Name"
+            helpText={errors?.secondName?.message}
+            fullWidth>
             <Input
               placeholder="Your second Name"
               {...register('secondName')}
@@ -113,7 +116,7 @@ const App: React.FC = () => {
 
           <EuiSpacer />
 
-          <EuiButton type="submit" fill fullWidth>
+          <EuiButton type="submit" fill fullWidth disabled={!!errors?.firstName && !!errors?.secondName}>
             Send
           </EuiButton>
         </EuiForm>
