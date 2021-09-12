@@ -9,6 +9,7 @@ export interface IOtherProps
    extends React.HTMLAttributes<HTMLInputElement> {
    // placeholder?: string // можно не указывать, т.к. мы наследуемся от HTMLAttr у инпутов
    label?: string
+   isInvalid: boolean
 }
 
 

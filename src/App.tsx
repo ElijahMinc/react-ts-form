@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React from 'react';
 import Header from './components/ElasticComponents/Header';
 import Input from './components/ElasticComponents/Input'
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -8,21 +8,20 @@ import {
   EuiFormRow,
   EuiSpacer,
 } from '@elastic/eui';
-
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from "yup";
 // type moreSomething = string | number
 
 
-// interface Some<T> {
-//   name: T
-//   age: T
-//   [propName: string]: T
-// }
 
 
-// const arr = <T,>(array: T[]): T => {
+// const arr = <T,>(array: T[]): T[] => {
 //   return array.reverse()
 // }
 
+// arr(['1', '2', '2'])
+// arr([1, 2, 3, 4, 5])
+// arr([1, '1', { name: 'name' }])
 // function array<T>(array: Array<T>): Array<T> {
 //   return array.reverse()
 // }
@@ -33,17 +32,30 @@ interface IFormInput {
   secondName: string;
 }
 
-
-type Data = Array<object>
-
+const schema = yup.object().shape({
+  firstName: yup
+    .string()
+    .matches(/^([^0-9]*)$/, "First name should not contain numbers")
+    .required('First name is a required field'),
+  secondName: yup
+    .string()
+    .matches(/^([^0-9]*)$/, "Last name should not contain numbers")
+    .required('Last name is a required field'),
+});
 
 const App: React.FC = () => {
+  const [showErrors, setShowErrors] = React.useState<boolean>(true);
 
-  // let obj: Some<moreSomething> = {
-  //   name: 22,
-  //   age: '123',
-  //   hello: '123123'
-  // }
+  const onButtonClick = () => {
+    setShowErrors(!showErrors);
+  };
+
+  const button = (
+    <EuiButton fill color="danger" onClick={onButtonClick}>
+      Toggle errors
+    </EuiButton>
+  );
+
   const [data, setData] = React.useState<object[]>([]);
 
 
@@ -53,11 +65,66 @@ const App: React.FC = () => {
       .then(json => setData(json))
   }, [])
 
-  console.log(data)
+  const { register, handleSubmit, formState: { errors } } = useForm<IFormInput>({
+    mode: 'onBlur',
+    resolver: yupResolver(schema)
+  });
 
-  const { register, handleSubmit } = useForm<IFormInput>({});
+
 
   const onSubmit: SubmitHandler<IFormInput> = data => console.log(data)
+  return (
+    <>
+      <Header
+        links={[
+          {
+            id: 1,
+            href: '#',
+            color: 'primary',
+            content: 'Main',
+            isActive: true
+          },
+          {
+            id: 2,
+            href: '#',
+            color: 'primary',
+            content: 'Serve',
+            isActive: false
+          },
+        ]}
+        title="Elijah Minc"
+      />
+      <div className="container">
+        <EuiForm isInvalid={!!errors?.firstName && !!errors?.secondName} component='form' onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
+          <EuiFormRow isInvalid={!!errors?.firstName} label="Set your First Name" helpText={errors?.firstName?.message} fullWidth>
+            <Input
+              placeholder="Your first Name"
+              {...register('firstName', { required: true })}
+              isInvalid={!!errors?.firstName}
+            />
+          </EuiFormRow>
+          <EuiFormRow isInvalid={!!errors?.secondName} label="Set your Second Name" helpText={errors?.secondName?.message} fullWidth>
+            <Input
+              placeholder="Your second Name"
+              {...register('secondName')}
+              isInvalid={!!errors?.secondName}
+            />
+          </EuiFormRow>
+
+          <EuiSpacer />
+
+          <EuiButton type="submit" fill fullWidth>
+            Send
+          </EuiButton>
+        </EuiForm>
+      </div>
+
+    </>
+  );
+}
+
+export default App;
+
 
   // const foo = <T, U, Z>(x: T, y: U, obj: Z): Z => {
   //   return obj
@@ -91,80 +158,3 @@ const App: React.FC = () => {
 
   // let newMass = [...mass, {...obj, obj}]
   // console.log(newMass)
-  return (
-    <>
-      <Header
-        links={[
-          {
-            id: 1,
-            href: '#',
-            color: 'primary',
-            content: 'Main',
-            isActive: true
-          },
-          {
-            id: 2,
-            href: '#',
-            color: 'primary',
-            content: 'Serve',
-            isActive: false
-          },
-        ]}
-        title="Elijah Minc"
-      />
-      <div className="container">
-        <EuiForm component='form' onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-          <EuiFormRow label="Set your First Name" helpText="Psss. You`re very beautiful" fullWidth>
-            <Input
-              placeholder="Your first Name"
-              {...register('firstName', { required: true })}
-            />
-          </EuiFormRow>
-
-          <EuiFormRow label="Set your Second Name" fullWidth>
-            <Input
-              placeholder="Your second Name"
-              {...register('secondName')}
-            />
-          </EuiFormRow>
-
-          <EuiSpacer />
-
-          <EuiButton type="submit" fill fullWidth>
-            Send
-          </EuiButton>
-        </EuiForm>
-      </div>
-
-    </>
-  );
-}
-
-export default App;
-
-
-
-{/* <EuiForm onSubmit={handleSubmit(onSubmit)}>
-<EuiFormRow label="Set your First Name" helpText="Psss. You`re very beautiful" fullWidth>
-  <input {...register("firstName")} />
-  <Input
-    label="firstName"
-    {...register('firstName')}
-    
-  />
-</EuiFormRow>
-
-<EuiFormRow label="Set your Second Name" fullWidth>
-  <input />
-  <Input
-    label="secondName"
-    {...register('secondName')}
-  />
-</EuiFormRow>
-
-<EuiSpacer />
-
-<EuiButton type="submit" fill>
-  Send
-</EuiButton>
-</EuiForm> */}

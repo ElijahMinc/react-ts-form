@@ -8,7 +8,7 @@ import {
    EuiTitle
 } from '@elastic/eui';
 
-type LinksInfo = {
+interface LinksInfo {
    id: number
    content: string
    href: string
